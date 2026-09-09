@@ -77,16 +77,16 @@ fun CityListScreen(
     var selectedCity by remember { mutableStateOf<String?>(null) }
 
     Column(modifier = modifier.fillMaxSize()) {
+        OutlinedTextField(
+            value = newCityName,
+            onValueChange = { newCityName = it },
+            label = { Text("City name") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        )
+
         Row(modifier = Modifier.padding(16.dp)) {
-            OutlinedTextField(
-                value = newCityName,
-                onValueChange = { newCityName = it },
-                label = { Text("City name") },
-                modifier = Modifier.weight(1f)
-            )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
             Button(
                 onClick = {
                     if (newCityName.isNotBlank()) {
@@ -97,18 +97,20 @@ fun CityListScreen(
             ) {
                 Text("Add City")
             }
-        }
 
-        Button(
-            onClick = {
-                if (selectedCity != null) {
-                    onDeleteCity(selectedCity!!)
-                    selectedCity = null
-                }
-            },
-            modifier = Modifier.padding(horizontal = 16.dp)
-        ) {
-            Text("Delete City")
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Button(
+                onClick = {
+                    if (selectedCity != null) {
+                        onDeleteCity(selectedCity!!)
+                        selectedCity = null
+                    }
+                },
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
+                Text("Delete City")
+            }
         }
 
         // LazyColumn is the Compose replacement for a basic scrolling ListView
