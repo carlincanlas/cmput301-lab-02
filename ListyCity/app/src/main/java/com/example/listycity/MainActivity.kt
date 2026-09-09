@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -41,6 +42,7 @@ class MainActivity : ComponentActivity() {
                     CityListScreen(
                         cities = cityRepository.cities,
                         onAddCity = { cityRepository.addCity(it) },
+                        onDeleteCity = { cityRepository.deleteCity(it) },
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -50,12 +52,13 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun CityRow(city: String) {
+fun CityRow(city: String, onClick: () -> Unit) {
     Text(
         text = city,
         fontSize = 28.sp,
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onClick() }
             .padding(horizontal = 18.dp, vertical = 14.dp)
     )
 }
@@ -64,9 +67,11 @@ fun CityRow(city: String) {
 fun CityListScreen(
     cities: List<String>,
     onAddCity: (String) -> Unit,
+    onDeleteCity: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var newCityName by remember { mutableStateOf("") }
+    var selectedCity by remember { mutableStateOf<String?>(null) }
 
     Column(modifier = modifier.fillMaxSize()) {
         Row(modifier = Modifier.padding(16.dp)) {
@@ -91,10 +96,25 @@ fun CityListScreen(
             }
         }
 
+        Button(
+            onClick = {
+                if (selectedCity != null) {
+                    onDeleteCity(selectedCity!!)
+                    selectedCity = null
+                }
+            },
+            modifier = Modifier.padding(horizontal = 16.dp)
+        ) {
+            Text("Delete City")
+        }
+
         // LazyColumn is the Compose replacement for a basic scrolling ListView
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(cities) { city ->
-                CityRow(city = city)
+                CityRow(
+                    city = city,
+                    onClick = { selectedCity = city}
+                )
             }
         }
     }
@@ -131,5 +151,9 @@ class CityRepository {
 
     fun addCity(city: String) {
         _cities.add(city)
+    }
+
+    fun deleteCity(city: String) {
+        _cities.remove(city)
     }
 }
